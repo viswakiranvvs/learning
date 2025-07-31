@@ -1,0 +1,127 @@
+<mujoco model="sixlinkbipedmodel">
+    <option timestep="0.005" gravity="0 0 -9.81"/>
+    <default>
+
+        <motor ctrllimited="true" ctrlrange="-0.3 0.3"/>
+    </default>
+    <!--compiler angle="radian" /-->
+    <size njmax="500" nconmax="100" />
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" width="512" height="512" rgb1=".1 .2 .3" rgb2=".2 .3 .4"/>
+    <material name="grid" texture="grid" texrepeat="0.1 0.1" texuniform="true" reflectance=".2"/>
+    <material name="mb" rgba="0.25490 0.411764 1 1"/>
+    <material name="mr" rgba="0.8235290 0.015686 0.17647 1"/>
+    <material name="torso" rgba="0.10196 0.50196 0.10196 1"/>
+    <mesh file="torso_solid.stl"/>
+    <!--mesh file="torso.stl"/-->
+    <mesh file="upperleg.stl"/>
+    <mesh file="lowerleg.stl"/>
+    <mesh file="flywheel.stl"/>
+    <hfield file="noise.png" name="mytilted" ncol="0" nrow="0" size="50 50 0.2 0.1" />
+  </asset>
+
+  <worldbody>
+    <light name="fixedlight" mode="fixed" directional="true"/>
+    <!--geom name="floor" size="0 0 1" type="plane" material="grid" condim="3" friction="1 0 0"/-->
+    <geom hfield="mytilted" size="0 0 10000" name="floor" material="grid" condim="3" friction="1 0 0" type='hfield'/>
+    <body name="Torso" pos="0 0 2.35" euler='0 0 0'>
+      <!--freejoint name="root"/-->
+      <joint armature="0" axis="1 0 0" damping="0" limited="false" name="rootx" pos="0 0 0" stiffness="0" type="slide"/>
+      <joint armature="0" axis="0 0 1" damping="0" limited="false" name="rootz" pos="0 0 0" stiffness="0" type="slide"/>
+      <joint armature="0" axis="0 1 0" damping="0" limited="false" name="rooty" pos="0 0 0" stiffness="0" type="hinge"/>
+      <inertial pos="0 0 0" axisangle="1 0 0 0" mass="30" diaginertia="1.225 1.225 1.225"/>
+      <geom type="mesh" mesh="torso_solid" material="torso"/>
+      <body name="torso_slider" pos="0 0 0" euler='0 0 0'>
+        <joint name="torso_joint" type="slide" pos="0 0 0" axis="0 0 1" range='0.15 0.55' limited="true" damping='1'/>
+        <inertial pos="0 0 0" axisangle="1 0 0 0" mass="7.5" diaginertia="1.225 1.225 1.225"/>
+        <geom type="mesh" mesh="torso_solid" material="mr"/>
+      </body>
+      <body name="upperleg1" pos="0 -0.1 -0.6" euler='0 0 0'>
+        <joint name="hipjoint_r1" type="hinge" pos="0 0 0.25" axis="0 1 0" range='-160 160' limited="true" damping="1"/>
+        <inertial pos="0 0 0" axisangle="1 0 0 0" mass="7.5" diaginertia="0.15625 0.15625 0.15625"/>
+        <geom type="mesh" mesh="upperleg" material="mr"/>
+        <body name="upperleg2" pos="0 0 -0.5" euler='0 0 0'>
+        	<joint name="hipjoint_r2" type="slide" pos="0 0 0.25" axis="0 0 -1" range='-0.25 0' limited="true" damping="1"/>
+        	<inertial pos="0 0 0" axisangle="1 0 0 0" mass="2.5" diaginertia="0.15625 0.15625 0.15625"/>
+        	<geom type="mesh" mesh="upperleg" material="mb"/>
+        	<body name="upperleg3" pos="0 0 -0.5" euler='0 0 0'>
+        		<joint name="hipjoint_r3" type="hinge" pos="0 0 0.25" axis="0 1 0 " range='10 160' limited="true" damping="1"/>
+        		<inertial pos="0 0 0" axisangle="1 0 0 0" mass="2.5" diaginertia="0.15625 0.15625 0.15625"/>
+        		<geom type="mesh" mesh="upperleg" material="mr"/>
+        		<site name="range_site1" pos="0.08 0 0.25" euler="0 135 0" size="0.005" type="sphere" rgba="1 0 0 1"/>
+        		<body name="lowerleg" pos="0 0 -0.5" euler='0 0 0'>
+        			<joint name="kneejoint_r" type="slide" pos="0 0 0.25" axis="0 0 -1" range='-0.25 0' limited="true" damping="1"/>
+        			<inertial pos="0 0 0" axisangle="1 0 0 0" mass="2.5" diaginertia="0.15625 0.15625 0.15625"/>
+        			<geom type="mesh" mesh="lowerleg" material="mb"/>
+        			<site name="foot_site_right" pos="0 0 -0.25" size="0.005" type="sphere" rgba="1 0 0 1"/>
+        			<!--site name="range_site1" pos="0.08 0 0" euler="0 90 0" size="0.005" type="sphere" rgba="1 0 0 1"/-->
+        			
+        		</body>
+        		
+        		
+        		
+        		
+        	</body>
+        	
+        	
+        	
+        	
+        </body>
+        
+            
+        <!--body name="lowerleg" pos="0 -0.1 -0.5" euler='0 0 0'>
+        	<joint name="kneejoint_r" type="hinge" pos="0 0 0.25" axis="0 1 0" range='10 170' limited="true" damping="5"/>
+        	<inertial pos="0 0 0" axisangle="1 0 0 0" mass="2.5" diaginertia="0.052083333333333 0.052083333333333 0.052083333333333"/>
+        	<geom type="mesh" mesh="lowerleg" material="mr"/>
+        	<site name="foot_site_right" pos="0 0 -0.25" size="0.005" type="sphere" rgba="1 0 0 1"/>
+        </body-->
+      </body>
+      <body name="upperleg5" pos="0 0.1 -0.6" euler='0 0 0'>
+        	<joint name="hipjoint_l1" type="hinge" pos="0 0 0.25" axis="0 1 0" range='-160 160' limited="true" damping="1"/>
+        	<inertial pos="0 0 0" axisangle="1 0 0 0" mass="7.5" diaginertia="0.15625 0.15625 0.15625"/>
+        	<geom type="mesh" mesh="upperleg" material="mb"/>
+        	<body name="upperleg6" pos="0 0 -0.5" euler='0 0 0'>
+        		<joint name="hipjoint_l2" type="slide" pos="0 0 0.25" axis="0 0 -1" range='-0.25 0' limited="true" damping="1"/>
+        		<inertial pos="0 0 0" axisangle="1 0 0 0" mass="2.5" diaginertia="0.15625 0.15625 0.15625"/>
+        		<geom type="mesh" mesh="upperleg" material="mr"/>
+        		<body name="upperleg7" pos="0 0 -0.5" euler='0 0 0'>
+        			<joint name="hipjoint_l3" type="hinge" pos="0 0 0.25" axis="0 1 0" range='10 160' limited="true" damping="1"/>
+        			<inertial pos="0 0 0" axisangle="1 0 0 0" mass="2.5" diaginertia="0.15625 0.15625 0.15625"/>
+        			<geom type="mesh" mesh="upperleg" material="mb"/>
+        			<site name="range_site2" pos="0.08 0 0.25" euler="0 135 0" size="0.005" type="sphere" rgba="1 0 0 1"/>
+        			<body name="lowerleg2" pos="0 0 -0.5" euler='0 0 0'>
+        				<joint name="kneejoint_l" type="slide" pos="0 0 0.25" axis="0 0 -1" range='-0.25 0' limited="true" damping="1"/>
+        				<inertial pos="0 0 0" axisangle="1 0 0 0" mass="2.5" diaginertia="0.15625 0.15625 0.15625"/>
+        				<geom type="mesh" mesh="lowerleg" material="mr"/>
+        				<site name="foot_site_left" pos="0 0 -0.25" size="0.005" type="sphere" rgba="1 0 0 1"/>
+        				<!--site name="range_site2" pos="0.08 0 0" euler="0 90 0" size="0.005" type="sphere" rgba="1 0 0 1"/-->
+        			</body>
+
+        		</body>
+
+        	</body>
+
+      </body>
+
+   </body>
+  </worldbody>
+   <!--contact>
+        <exclude name="exclude_torso_reactionw" body1="Torso" body2="reaction_wheel"/>
+   </contact-->
+  <sensor>
+  	<rangefinder name='range_sensor1' site='range_site1'/>
+  	<rangefinder name='range_sensor2' site='range_site2'/>
+  </sensor>
+  <actuator>
+    <motor name="motor1"  gear="1000"  joint="kneejoint_r"/>
+    <motor name="motor2"  gear="1000"  joint="hipjoint_r1"/>
+    <motor name="motor3"  gear="1000"  joint="hipjoint_r2"/>
+    <motor name="motor4"  gear="1000"  joint="hipjoint_r3"/>
+    <motor name="motor5"  gear="1000"  joint="hipjoint_l1"/>
+    <motor name="motor6"  gear="1000"  joint="hipjoint_l2"/>
+    <motor name="motor7"  gear="1000"  joint="hipjoint_l3"/>    
+    <motor name="motor8"  gear="1000"  joint="kneejoint_l"/>
+    <motor name="motor9"  gear="1000"  joint="torso_joint"/>
+  </actuator>
+</mujoco>
+
