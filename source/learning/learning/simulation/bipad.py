@@ -31,7 +31,7 @@ BIPAD_CONFIG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(usd_path="/DATA1/ai24mtech11006/ai24mtech11006/isaac_sim/learning/models/usd/sixleg1.usd"),
     # actuators={}
     # joint_names=[".*", "^((?!torso_joint|hipjoint_r3|hipjoint_l3).)*$"],  # exclude these joints
-    actuators={"kneejoint_r": ImplicitActuatorCfg(joint_names_expr=["kneejoint_r"], damping=None, stiffness=None)},
+    actuators={"hipjoint_r1": ImplicitActuatorCfg(joint_names_expr=["hipjoint_r1"], damping=None, stiffness=None)},
 )
 
 # DOFBOT_CONFIG = ArticulationCfg(
@@ -103,18 +103,24 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
 
     while simulation_app.is_running():
         # reset
-        # if count % 500 == 0:
+        if count % 500 == 0:
         #     # reset counters
-        #     count = 0
+            count = 0
         # reset the scene entities to their initial positions offset by the environment origins
-        #     root_jetbot_state = scene["Jetbot"].data.default_root_state.clone()
+        #     root_jetbot_state = scene["bipad"].data.default_root_state.clone()
         #     root_jetbot_state[:, :3] += scene.env_origins
-        #     root_dofbot_state = scene["Dofbot"].data.default_root_state.clone()
-        #     root_dofbot_state[:, :3] += scene.env_origins
+        #     print(root_jetbot_state)
+        # #     root_dofbot_state = scene["Dofbot"].data.default_root_state.clone()
+        # #     root_dofbot_state[:, :3] += scene.env_origins
 
-        #     # copy the default root state to the sim for the jetbot's orientation and velocity
-        #     scene["Jetbot"].write_root_pose_to_sim(root_jetbot_state[:, :7])
-        #     scene["Jetbot"].write_root_velocity_to_sim(root_jetbot_state[:, 7:])
+        # #     # copy the default root state to the sim for the jetbot's orientation and velocity
+        #     scene["bipad"].write_root_pose_to_sim(root_jetbot_state[:, :7])
+        #     scene["bipad"].write_root_velocity_to_sim(root_jetbot_state[:, 7:])
+
+            
+
+
+            scene.reset()
         #     scene["Dofbot"].write_root_pose_to_sim(root_dofbot_state[:, :7])
         #     scene["Dofbot"].write_root_velocity_to_sim(root_dofbot_state[:, 7:])
 
@@ -131,7 +137,7 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
         #     scene["Dofbot"].write_joint_state_to_sim(joint_pos, joint_vel)
         #     # clear internal buffers
         #     scene.reset()
-        #     print("[INFO]: Resetting Jetbot and Dofbot state...")
+            print("[INFO]: Resetting state...")
 
         # # drive around
         # if count % 100 < 75:
@@ -145,13 +151,13 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
 
         # # wave
         wave_action = scene["bipad"].data.default_joint_pos
-        print(wave_action)
-        wave_action[:, 0:4] = 0.25 * np.sin(2 * np.pi * 0.5 * sim_time)
+        # print(wave_action)
+        wave_action[:] = 2 * np.sin(2 * np.pi * 0.5 * sim_time)
         print(wave_action)
         # scene["bipad"].set_joint_position_target(wave_action)
         scene["bipad"].set_joint_position_target(wave_action)
-
         scene.write_data_to_sim()
+        
         sim.step()
         sim_time += sim_dt
         count += 1
