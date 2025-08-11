@@ -30,7 +30,7 @@ from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 
 BIPAD_CONFIG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path="/DATA1/ai24mtech11006/ai24mtech11006/isaac_sim/learning/models/usd/sixleg1.usd",
+        usd_path="/DATA1/ai24mtech11006/ai24mtech11006/isaac_sim/learning/BipedalRobotSim/URDF+USD/poclegs.usd",
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             rigid_body_enabled=True,
             enable_gyroscopic_forces=True,
@@ -47,7 +47,7 @@ BIPAD_CONFIG = ArticulationCfg(
     ),
     # actuators={}
     # joint_names=[".*", "^((?!torso_joint|hipjoint_r3|hipjoint_l3).)*$"],  # exclude these joints
-    actuators={"hipjoint_1": ImplicitActuatorCfg(joint_names_expr=["hipjoint_r1", "hipjoint_l1"], stiffness=None, damping=None)},
+    actuators={"hipjoint_1": ImplicitActuatorCfg(joint_names_expr=["LL_HFE", "LR_HFE"], stiffness=None, damping=None)},
 )
 
 # DOFBOT_CONFIG = ArticulationCfg(
@@ -171,8 +171,8 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
         wave_action = scene["bipad"].data.default_joint_pos
         # print(wave_action)
         temp = 2 * np.sin(2 * np.pi * 0.5 * sim_time)
-        wave_action[0, joint_indices["hipjoint_r1"]] = temp
-        wave_action[0, joint_indices["hipjoint_l1"]] = -temp
+        wave_action[0, joint_indices["LL_HFE"]] = temp
+        wave_action[0, joint_indices["LR_HFE"]] = -temp
         # wave_action[0,2] = temp
         # wave_action[0,1] = -1*temp
         # wave_action[0,3:] = -1*temp

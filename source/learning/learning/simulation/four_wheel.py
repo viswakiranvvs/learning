@@ -30,24 +30,24 @@ from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 
 BIPAD_CONFIG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path="/DATA1/ai24mtech11006/ai24mtech11006/isaac_sim/learning/models/usd/sixleg1.usd",
-        rigid_props=sim_utils.RigidBodyPropertiesCfg(
-            rigid_body_enabled=True,
-            enable_gyroscopic_forces=True,
-            disable_gravity=False,
-            max_depenetration_velocity=5.0,            
-        ),
-        articulation_props=sim_utils.ArticulationRootPropertiesCfg(
-            enabled_self_collisions=True,
-            solver_position_iteration_count=4,
-            solver_velocity_iteration_count=0,
-            sleep_threshold=0.005,
-            stabilization_threshold=0.001,
-        ),
+        usd_path="/DATA1/ai24mtech11006/ai24mtech11006/isaac_sim/learning/models/usd/four_wheel.usd",
+        # rigid_props=sim_utils.RigidBodyPropertiesCfg(
+        #     rigid_body_enabled=True,
+        #     enable_gyroscopic_forces=True,
+        #     disable_gravity=False,
+        #     max_depenetration_velocity=5.0,            
+        # ),
+        # articulation_props=sim_utils.ArticulationRootPropertiesCfg(
+        #     enabled_self_collisions=True,
+        #     solver_position_iteration_count=4,
+        #     solver_velocity_iteration_count=0,
+        #     sleep_threshold=0.005,
+        #     stabilization_threshold=0.001,
+        # ),
     ),
     # actuators={}
     # joint_names=[".*", "^((?!torso_joint|hipjoint_r3|hipjoint_l3).)*$"],  # exclude these joints
-    actuators={"hipjoint_1": ImplicitActuatorCfg(joint_names_expr=["hipjoint_r1", "hipjoint_l1"], stiffness=None, damping=None)},
+    actuators={"actuators": ImplicitActuatorCfg(joint_names_expr=["LF", "LB","RF","RB"], stiffness=None, damping=None)},
 )
 
 # DOFBOT_CONFIG = ArticulationCfg(
@@ -108,7 +108,7 @@ class NewRobotsSceneCfg(InteractiveSceneCfg):
     )
 
     # robot
-    bipad = BIPAD_CONFIG.replace(prim_path="{ENV_REGEX_NS}/bipad")
+    bipad = BIPAD_CONFIG.replace(prim_path="{ENV_REGEX_NS}/Four_wheel_bot")
     # Dofbot = DOFBOT_CONFIG.replace(prim_path="{ENV_REGEX_NS}/Dofbot")
 
 
@@ -119,9 +119,29 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
 
     while simulation_app.is_running():
         # reset
-        if count % 500 == 0:
+        if count>=100 and count<=120:
         #     # reset counters
             count = 0
+            joint_indices = {name: i for i, name in enumerate(scene["bipad"].data.joint_names)}
+
+            wave_action = scene["bipad"].data.default_joint_pos
+            # print(wave_action)
+            temp = 20
+            wave_action[0, joint_indices["LF"]] = temp
+            wave_action[0, joint_indices["LB"]] = temp
+            wave_action[0, joint_indices["RF"]] = -temp
+            wave_action[0, joint_indices["RB"]] = -temp
+            # wave_action[0,2] = temp
+            # wave_action[0,1] = -1*temp
+            # wave_action[0,3:] = -1*temp
+            print(wave_action)
+            # scene["bipad"].set_joint_position_target(wave_action)
+            scene["bipad"].set_joint_velocity_target(wave_action)
+            scene.write_data_to_sim()
+            sim.step()
+            sim_time += sim_dt
+            count += 1
+            scene.update(sim_dt)
         # reset the scene entities to their initial positions offset by the environment origins
         #     root_jetbot_state = scene["bipad"].data.default_root_state.clone()
         #     root_jetbot_state[:, :3] += scene.env_origins
@@ -136,7 +156,7 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
             
 
 
-            scene.reset()
+            # scene.reset()
         #     scene["Dofbot"].write_root_pose_to_sim(root_dofbot_state[:, :7])
         #     scene["Dofbot"].write_root_velocity_to_sim(root_dofbot_state[:, 7:])
 
@@ -166,25 +186,29 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
         # scene["Jetbot"].set_joint_velocity_target(action)
 
         # # wave
-        joint_indices = {name: i for i, name in enumerate(scene["bipad"].data.joint_names)}
+        else:
+            joint_indices = {name: i for i, name in enumerate(scene["bipad"].data.joint_names)}
 
-        wave_action = scene["bipad"].data.default_joint_pos
-        # print(wave_action)
-        temp = 2 * np.sin(2 * np.pi * 0.5 * sim_time)
-        wave_action[0, joint_indices["hipjoint_r1"]] = temp
-        wave_action[0, joint_indices["hipjoint_l1"]] = -temp
-        # wave_action[0,2] = temp
-        # wave_action[0,1] = -1*temp
-        # wave_action[0,3:] = -1*temp
-        print(wave_action)
-        # scene["bipad"].set_joint_position_target(wave_action)
-        scene["bipad"].set_joint_position_target(wave_action)
-        scene.write_data_to_sim()
-        
-        sim.step()
-        sim_time += sim_dt
-        count += 1
-        scene.update(sim_dt)
+            wave_action = scene["bipad"].data.default_joint_pos
+            # print(wave_action)
+            # temp = 2 * np.sin(2 * np.pi * 0.5 * sim_time)
+            temp = 20
+            wave_action[0, joint_indices["LF"]] = temp
+            wave_action[0, joint_indices["LB"]] = temp
+            wave_action[0, joint_indices["RF"]] = temp
+            wave_action[0, joint_indices["RB"]] = temp
+            # wave_action[0,2] = temp
+            # wave_action[0,1] = -1*temp
+            # wave_action[0,3:] = -1*temp
+            print(wave_action)
+            # scene["bipad"].set_joint_position_target(wave_action)
+            scene["bipad"].set_joint_velocity_target(wave_action)
+            scene.write_data_to_sim()
+            
+            sim.step()
+            sim_time += sim_dt
+            count += 1
+            scene.update(sim_dt)
 
 
 def main():
