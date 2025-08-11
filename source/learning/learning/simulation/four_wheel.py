@@ -121,7 +121,7 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
         # reset
         if count>=100 and count<=120:
         #     # reset counters
-            count = 0
+            # count = 0
             joint_indices = {name: i for i, name in enumerate(scene["bipad"].data.joint_names)}
 
             wave_action = scene["bipad"].data.default_joint_pos
@@ -192,7 +192,7 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
             wave_action = scene["bipad"].data.default_joint_pos
             # print(wave_action)
             # temp = 2 * np.sin(2 * np.pi * 0.5 * sim_time)
-            temp = 20
+            temp = 10
             wave_action[0, joint_indices["LF"]] = temp
             wave_action[0, joint_indices["LB"]] = temp
             wave_action[0, joint_indices["RF"]] = temp
@@ -209,6 +209,9 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
             sim_time += sim_dt
             count += 1
             scene.update(sim_dt)
+        
+        if count==120:
+            count=0
 
 
 def main():
