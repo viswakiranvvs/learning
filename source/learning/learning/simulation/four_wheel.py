@@ -1,5 +1,6 @@
 
 import argparse
+from time import sleep
 
 from isaaclab.app import AppLauncher
 
@@ -131,6 +132,11 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
             wave_action[0, joint_indices["LB"]] = temp
             wave_action[0, joint_indices["RF"]] = -temp
             wave_action[0, joint_indices["RB"]] = -temp
+
+            wave_action[1, joint_indices["LF"]] = -temp
+            wave_action[1, joint_indices["LB"]] = -temp
+            wave_action[1, joint_indices["RF"]] = temp
+            wave_action[1, joint_indices["RB"]] = temp
             # wave_action[0,2] = temp
             # wave_action[0,1] = -1*temp
             # wave_action[0,3:] = -1*temp
@@ -197,10 +203,15 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
             wave_action[0, joint_indices["LB"]] = temp
             wave_action[0, joint_indices["RF"]] = temp
             wave_action[0, joint_indices["RB"]] = temp
+
+            wave_action[1, joint_indices["LF"]] = temp
+            wave_action[1, joint_indices["LB"]] = temp
+            wave_action[1, joint_indices["RF"]] = temp
+            wave_action[1, joint_indices["RB"]] = temp
             # wave_action[0,2] = temp
             # wave_action[0,1] = -1*temp
             # wave_action[0,3:] = -1*temp
-            print(wave_action)
+            # print(wave_action)
             # scene["bipad"].set_joint_position_target(wave_action)
             scene["bipad"].set_joint_velocity_target(wave_action)
             scene.write_data_to_sim()
@@ -224,7 +235,7 @@ def main():
 
     sim.set_camera_view([3.5, 0.0, 3.2], [0.0, 0.0, 0.5])
     # design scene
-    scene_cfg = NewRobotsSceneCfg(args_cli.num_envs, env_spacing=2.0)
+    scene_cfg = NewRobotsSceneCfg(2, env_spacing=2.0)
     scene = InteractiveScene(scene_cfg)
     # scene._scene._physics_scene.set_gravity([0.0, 0.0, -9.81])
     # Play the simulator
