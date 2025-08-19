@@ -308,7 +308,7 @@ def turtlebot_movement():
                         ("sub_twist.inputs:topicName", "/cmd_vel"),
                         ("sub_twist.inputs:queueSize", 10),
                         ("diff_ctrl.inputs:maxAngularSpeed",0.8),
-                        ("diff_ctrl.inputs:maxLinearSpeed",0.5),
+                        ("diff_ctrl.inputs:maxLinearSpeed",0.4),
                         ("diff_ctrl.inputs:wheelDistance",0.16),
                         ("diff_ctrl.inputs:wheelRadius",0.025),
                         # ("sub_twist.inputs:qosProfile", "sensor_data"),
